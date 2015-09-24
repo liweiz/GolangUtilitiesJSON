@@ -8,7 +8,7 @@ func ConvertToBoolSlice(s []reflect.Value) (bool, []bool) {
 		if reflect.TypeOf(s[0]).Kind() == reflect.Bool {
 			r := []bool{}
 			for _, x := range s {
-				append(r, x.Bool())
+				// append(r, x.Bool())
 			}
 			return true, r
 		}
@@ -22,7 +22,7 @@ func ConvertToStringSlice(s []reflect.Value) (bool, []string) {
 		if reflect.TypeOf(s[0]).Kind() == reflect.Bool {
 			r := []string{}
 			for _, x := range s {
-				append(r, x.String())
+				// append(r, x.String())
 			}
 			return true, r
 		}
@@ -36,7 +36,7 @@ func ConvertToFloat64Slice(s []reflect.Value) (bool, []float64) {
 		if reflect.TypeOf(s[0]).Kind() == reflect.Float64 {
 			r := []float64{}
 			for _, x := range s {
-				append(r, x.Float())
+				// append(r, x.Float())
 			}
 			return true, r
 		}
@@ -45,14 +45,14 @@ func ConvertToFloat64Slice(s []reflect.Value) (bool, []float64) {
 }
 
 // ConvertToStringKeyMapSlice returns true and []map[string]interface, when non-zero []map[string]interface is successfully converted.
-func ConvertToStringKeyMapSlice(s []reflect.Value) (bool, []map[string]interface) {
+func ConvertToStringKeyMapSlice(s []reflect.Value) (bool, []map[string]interface{}) {
 	if len(s) > 0 {
 		if reflect.TypeOf(s[0]).Kind() == reflect.Map {
 			r := []float64{}
 			for _, x := range s {
-				append(r, x.Float())
+				// append(r, x.Float())
 			}
-			return true, r
+			// return true, r
 		}
 	}
 	return false, nil
@@ -62,7 +62,7 @@ func ConvertToStringKeyMapSlice(s []reflect.Value) (bool, []map[string]interface
 func CheckIfIsSliceValue(value interface{}) (bool, []interface{}) {
 	t := reflect.TypeOf(value)
 	if t.Kind() == reflect.Slice {
-		if t.Elem()
+		// if t.Elem()
 	}
 	return false, nil
 }

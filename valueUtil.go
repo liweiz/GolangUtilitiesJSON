@@ -13,42 +13,99 @@ import (
 // map[string]interface{}, for JSON objects
 // nil for JSON null
 
-func HandleSliceValue(value interface{}) []interface{} {
-	r := []interface{}{}
-	t := reflect.TypeOf(value)
+
+
+
+
+
+func ExploreTypeForValue(value interface{}) (reflect.Kind, reflect.Value){
+	v := reflect.ValueOf(value)
+	if v.IsNil {
+		return reflect.Invalid, nil
+	} else {
+		switch v.Kind() {
+		case reflect.Slice:
+			return reflect.Slice, v
+		case reflect.Map:
+			return reflect.Map, v
+		case reflect.String:
+			return reflect.String, v
+		case reflect.Float64:
+			return reflect.Float64, v
+		case reflect.Bool:
+			return reflect.Bool, v
+		default:
+			return reflect.Invalid, nil
+		}
+	}
+}
+
+func DispatchToValueExplorer(valueType reflect.Kind, value reflect.Value) {
+	switch valueType {
+	case reflect.Slice:
+		ok, o := ExploreSliceValue(value)
+		if ok {
+			switch o.Type().Elem() {
+			case reflect.Bool:
+				ok, r := ConvertToBoolSlice(o)
+				if ok {
+
+				}
+			}
+		}
+		return reflect.Slice, v
+	case reflect.Map:
+		return reflect.Map, v
+	case reflect.String:
+		return reflect.String, v
+	case reflect.Float64:
+		return reflect.Float64, v
+	case reflect.Bool:
+		return reflect.Bool, v
+	default:
+		return reflect.Invalid, nil
+	}
+}
+
+
+
+
+func ExploreSliceValue(value reflect.Value) (isValid bool, output []reflect.Value) {
+	r := []reflect.Value{}
+	t := value.Type()
 	if t.Kind() == reflect.Slice {
 		l := t.Len()
 		if l > 0 {
 			v := reflect.ValueOf(value)
 			for i := 0; i < l; i++ {
-				Append(r, v.Index(i))
+				append(r, v.Index(i))
 			}
-
+			return true, r
 		}
 	}
-	return r
-}
-
-
-
-func CheckIfIsCollectiveValue(value interface{}) (bool, []interface{}) {
-	t := reflect.TypeOf(value)
-	tKind := t.Kind()
-	switch tKind {
-	case reflect.Slice:
-		tElem := t.Elem()
-		if tElem == reflect.Slice {
-
-		} else if tElem == reflect.Map {
-
-		}
-	case reflect.Map:
-	default:
-
-	}
-
 	return false, nil
 }
+
+func ExploreStringMapValue(value interface{}) (isValid bool, output map[string]reflect.Value) {
+	r := map[string]reflect.Value{}
+	t := value.Type()
+	if t.Kind() == reflect.Map {
+		l := len(t)
+		if l > 0 {
+			v := reflect.ValueOf(value)
+			k := v.MapKeys()
+			if k[0].Kind() == reflect.String {
+				for _, x := range k {
+					r[x.String] = v.MapIndex(x)
+				}
+				return true, r
+			}
+		}
+	}
+	return false, nil
+}
+
+
 
 // FindTypeForValue returns type for the value. If it's a map, further action will be needed. If it's a nil, we leave it to the next check.
 func FindTypeForValue(value interface{}) (valueType reflect.Kind, furtherActionNeeded bool) {
