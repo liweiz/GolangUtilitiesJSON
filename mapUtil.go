@@ -2,9 +2,18 @@ package utilities
 
 import "reflect"
 
+// StringKeyMap is the map counterpart for JSON.
 type StringKeyMap map[string]interface{}
 
+// StringKeyMapType stores StringKeyMap's value type for one layer of one branch.
 type StringKeyMapType map[string]reflect.Kind
+
+// StringKeyMapTypeContainer stores the parent key and possible array index to link the StringKeyMapType info for its parent layer. An empty ParentKey indicates it's a root map. Index == -1 indicates parent level is not an array.
+type StringKeyMapTypeContainer struct {
+	ParentKey string
+	Index     int16
+	TypeMap   StringKeyMapType
+}
 
 // ValuePath is the container for a level-based path to a value in a StringKeyMap. It also contains single and slice (if applicable) forms of value(s).
 // Level here is not just identified by keys in different levels. It's also identified by slices.
@@ -17,6 +26,38 @@ type ValuePath struct {
 	Indexes       []int16
 	ReflectValue  reflect.Value
 	ReflectValues []reflect.Value
+}
+
+// ValueKey returns the key for the value.
+func (p ValuePath) ValueKey() string {
+	l := len(p.Keys)
+	if l > 1 {
+		if len(p.Keys[l-1]) == 0 {
+			return p.Keys[l-2]
+		}
+		return p.Keys[l-1]
+	}
+	return p.Keys[0]
+}
+
+// ValueIndex returns the index for the value, if the value is in an array. Otherwise, it returns -1 to indicate the value is not from an array.
+func (p ValuePath) ValueIndex() int16 {
+	l := len(p.Keys)
+	if l > 1 {
+		if len(p.Keys[l-1]) == 0 {
+			return p.Indexes[l-1]
+		}
+	}
+	return -1
+}
+
+// GetNextLevelValue
+func GetNextLevelValue(reflect.Value) reflect.Value {
+
+}
+
+func (p ValuePath) getReflectValueForPath(s StringKeyMap) {
+
 }
 
 func (s StringKeyMapType) GetValuePath(parentPath ValuePath, sMap StringKeyMap) ValuePath {

@@ -1,3 +1,5 @@
+Still WIP at early stage.
+
 This is a utility package to parse JSON in Golang.
 
 Many of quality APIs that serve JSON come with fixed schemas. However, we can not expect to get a complete schema with a single JSON since some of the data is probably not available for that specific request. What I can think of to get the complete schema is to get some JSONs from the API and find out the schema manually.
