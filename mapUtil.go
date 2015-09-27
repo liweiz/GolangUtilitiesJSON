@@ -2,17 +2,69 @@ package utilities
 
 import "reflect"
 
+// There are two dimensions in a map: 1) depth, a path to a value node 2) width, a section in a branch for a given level.
+
 // StringKeyMap is the map counterpart for JSON.
 type StringKeyMap map[string]interface{}
 
-// StringKeyMapType stores StringKeyMap's value type for one layer of one branch.
-type StringKeyMapType map[string]reflect.Kind
+// StringKeyMapTypeMap stores StringKeyMap's value type for one layer of one branch.
+type StringKeyMapTypeMap map[string]reflect.Kind
 
-// StringKeyMapTypeContainer stores the parent key and possible array index to link the StringKeyMapType info for its parent layer. An empty ParentKey indicates it's a root map. Index == -1 indicates parent level is not an array.
-type StringKeyMapTypeContainer struct {
+// StringKeyMapTypeSection stores the parent key and possible array index to link the StringKeyMapType info for its parent layer. An empty ParentKey indicates it's a root map. Index == -1 indicates parent level is not an array.
+type StringKeyMapTypeSection struct {
 	ParentKey string
 	Index     int16
-	TypeMap   StringKeyMapType
+	TypeMap   StringKeyMapTypeMap
+	TypeSlice reflect.Kind
+}
+
+// StringKeyMapTypeSections stores all the StringKeyMapTypeSections for a map schema.
+var StringKeyMapTypeSections = []StringKeyMapTypeSection{}
+
+// ScanOneBranchLevelMap finds out all value types in this level.
+func ScanOneBranchLevelMap(key string, v reflect.Value) (isMap bool, section StringKeyMapTypeSection) {
+	if v.Kind() == reflect.Map {
+		r := StringKeyMapTypeSection{key, -1, StringKeyMapTypeMap{}, reflect.Invalid}
+		for _, x := range v.MapKeys() {
+			vv := v.MapIndex(x)
+			known, t := CheckIfValueTypeAlreadyKnown(vv.String(), -1)
+			if known {
+				r.TypeMap[x.String()] = t
+			} else {
+				k, va := ExploreTypeForValue(vv)
+				if k == reflect.Invalid {
+					return false, StringKeyMapTypeSection{}
+				}
+				r.TypeMap[x.String()] = k
+			}
+		}
+		return true, r
+	}
+	return false, StringKeyMapTypeSection{}
+}
+
+// CheckIfValueTypeAlreadyKnown finds out if the value's type is known. index is used to locate the value in an array.
+func CheckIfValueTypeAlreadyKnown(key string, index ...int16) (known bool, valueType reflect.Kind) {
+	var isInArray bool
+	if len(index) == 0 {
+		isInArray = false
+	} else if index[0] < 0 {
+		isInArray = false
+	} else {
+		isInArray = true
+	}
+	for _, x := range StringKeyMapTypeSections {
+		if key == x.ParentKey {
+			if isInArray {
+				if index[0] == x.Index {
+					return true, x.TypeSlice
+				}
+			} else {
+				return true, x.TypeMap[key]
+			}
+		}
+	}
+	return false, reflect.Invalid
 }
 
 // ValuePath is the container for a level-based path to a value in a StringKeyMap. It also contains single and slice (if applicable) forms of value(s).
