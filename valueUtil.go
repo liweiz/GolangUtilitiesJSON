@@ -13,8 +13,8 @@ import (
 // map[string]interface{}, for JSON objects
 // nil for JSON null
 
-// ExploreTypeForValue finds out the type and returns value in the form of reflect.Value.
-func ExploreTypeForValue(value interface{}) (reflect.Kind, reflect.Value) {
+// FindTypeForValue finds out the type and returns casted value in the form of reflect.Value for non collective data. It handles a data itself or in the form after one reflect.ValueOf() operation.
+func FindTypeForValue(value interface{}) (reflect.Kind, reflect.Value) {
 	var v reflect.Value
 	vv, ok := value.(reflect.Value)
 	if ok {
@@ -27,104 +27,26 @@ func ExploreTypeForValue(value interface{}) (reflect.Kind, reflect.Value) {
 	}
 	switch v.Kind() {
 	case reflect.Slice:
-		return reflect.Slice, v
+		if v.Len() > 0 {
+			return reflect.Slice, v
+		}
+		return reflect.Invalid, reflect.Value{}
 	case reflect.Map:
-		return reflect.Map, v
+		if len(v.MapKeys()) > 0 {
+			return reflect.Map, v
+		}
+		return reflect.Invalid, reflect.Value{}
 	case reflect.String:
-		return reflect.String, v
+		return reflect.String, reflect.ValueOf(v.String())
 	case reflect.Float64:
-		return reflect.Float64, v
+		return reflect.Float64, reflect.ValueOf(v.Float())
 	case reflect.Bool:
-		return reflect.Bool, v
+		return reflect.Bool, reflect.ValueOf(v.Bool())
 	default:
+		fmt.Printf("ERROR: FindTypeForValue Value:%+v is out of current options.\n", value)
 		return reflect.Invalid, reflect.Value{}
 	}
 }
-
-// func DispatchToValueExplorer(valueType reflect.Kind, value reflect.Value) {
-// 	switch valueType {
-// 	case reflect.Slice:
-// 		ok, o := ExploreSliceValue(value)
-// 		if ok {
-// 			switch o.Type().Elem() {
-// 			case reflect.Bool:
-// 				ok, r := ConvertToBoolSlice(o)
-// 				if ok {
-//
-// 				}
-// 			}
-// 		}
-// 		return reflect.Slice, v
-// 	case reflect.Map:
-// 		return reflect.Map, v
-// 	case reflect.String:
-// 		return reflect.String, v
-// 	case reflect.Float64:
-// 		return reflect.Float64, v
-// 	case reflect.Bool:
-// 		return reflect.Bool, v
-// 	default:
-// 		return reflect.Invalid, nil
-// 	}
-// }
-
-// func ExploreSliceValue(value reflect.Value) (isValid bool, output []reflect.Value) {
-// 	r := []reflect.Value{}
-// 	t := value.Type()
-// 	if t.Kind() == reflect.Slice {
-// 		l := t.Len()
-// 		if l > 0 {
-// 			v := reflect.ValueOf(value)
-// 			for i := 0; i < l; i++ {
-// 				append(r, v.Index(i))
-// 			}
-// 			return true, r
-// 		}
-// 	}
-// 	return false, nil
-// }
-
-// func ExploreStringMapValue(value interface{}) (isValid bool, output map[string]reflect.Value) {
-// 	r := map[string]reflect.Value{}
-// 	t := value.Type()
-// 	if t.Kind() == reflect.Map {
-// 		l := len(t)
-// 		if l > 0 {
-// 			v := reflect.ValueOf(value)
-// 			k := v.MapKeys()
-// 			if k[0].Kind() == reflect.String {
-// 				for _, x := range k {
-// 					r[x.String] = v.MapIndex(x)
-// 				}
-// 				return true, r
-// 			}
-// 		}
-// 	}
-// 	return false, nil
-// }
-
-// FindTypeForValue returns type for the value. If it's a map, further action will be needed. If it's a nil, we leave it to the next check.
-// func FindTypeForValue(value interface{}) (valueType reflect.Kind, furtherActionNeeded bool) {
-// 	if value == nil {
-// 		return reflect.Invalid, false
-// 	}
-// 	switch reflect.TypeOf(value).Kind() {
-// 	case map[string]interface{}:
-// 		return reflect.Map, true
-// 	case bool:
-// 		return reflect.Bool, false
-// 	case float64:
-// 		return reflect.Float64, false
-// 	case string:
-// 		return reflect.String, false
-// 	default:
-// 		if reflect.TypeOf(value).len() > 0 {
-// 			return reflect.Slice, true
-// 		}
-// 		fmt.Printf("ERROR: Type:%+v Value:%+v for key is out of current options.\n", reflect.TypeOf(value1), reflect.ValueOf(value1))
-// 		return reflect.Invalid, false
-// 	}
-// }
 
 // CompareValues compares two values. Currently targeted at value from map.
 func CompareValues(value1 interface{}, value2 interface{}) bool {
