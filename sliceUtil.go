@@ -101,7 +101,7 @@ func ConvertToStringKeyMapSlice(s []reflect.Value, typeChecked bool) (bool, []ma
 		if ok {
 			r := []map[string]reflect.Value{}
 			for _, x := range s {
-				r = append(r, ConvertToMap(x))
+				r = append(r, ConvertToValueMap(x))
 			}
 			return true, r
 		}
