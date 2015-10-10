@@ -37,7 +37,7 @@ func (s StringKeyMapTypeSections) FindValueTypesInKnownMap(key string, v reflect
 			if known {
 				r.TypeMap[x.String()] = t
 			} else {
-				k, _ := FindTypeForValue(v.MapIndex(x))
+				k := FindTypeForValue(v.MapIndex(x))
 				if k == reflect.Invalid {
 					return StringKeyMapTypeSection{}, false
 				}
@@ -59,7 +59,7 @@ func FindValueTypesInUnknownMap(key string, v reflect.Value, noOfArrayLv int) (s
 		if v.Len() > 0 {
 			s := StringKeyMapTypeSection{}
 			for _, x := range v.MapKeys() {
-				k, _ := FindTypeForValue(v.MapIndex(x))
+				k := FindTypeForValue(v.MapIndex(x))
 				s.TypeMap[x.String()] = k
 			}
 			s.ParentKey = key
@@ -75,7 +75,7 @@ func FindValueTypesInSlice(key string, v reflect.Value, noOfArrayLv int) (sectio
 	if v.Kind() == reflect.Slice {
 		if v.Len() > 0 {
 			_, s := ConvertToValueSlice(v)
-			k, _ := FindTypeForValue(s[0])
+			k := FindTypeForValue(s[0])
 			return StringKeyMapTypeSection{key, noOfArrayLv, StringKeyMapTypeMap{}, k}, true
 		}
 	}

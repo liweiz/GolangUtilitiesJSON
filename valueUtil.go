@@ -14,7 +14,7 @@ import (
 // nil for JSON null
 
 // FindTypeForValue finds out the type and returns casted value in the form of reflect.Value for non collective data. It handles a data itself or in the form after one reflect.ValueOf() operation.
-func FindTypeForValue(value interface{}) (reflect.Kind, reflect.Value) {
+func FindTypeForValue(value interface{}) reflect.Kind {
 	var v reflect.Value
 	vv, ok := value.(reflect.Value)
 	if ok {
@@ -22,29 +22,26 @@ func FindTypeForValue(value interface{}) (reflect.Kind, reflect.Value) {
 	} else {
 		v = reflect.ValueOf(value)
 	}
-	if v.IsNil() {
-		return reflect.Invalid, reflect.Value{}
-	}
 	switch v.Kind() {
 	case reflect.Slice:
 		if v.Len() > 0 {
-			return reflect.Slice, v
+			return reflect.Slice
 		}
-		return reflect.Invalid, reflect.Value{}
+		return reflect.Invalid
 	case reflect.Map:
 		if len(v.MapKeys()) > 0 {
-			return reflect.Map, v
+			return reflect.Map
 		}
-		return reflect.Invalid, reflect.Value{}
+		return reflect.Invalid
 	case reflect.String:
-		return reflect.String, reflect.ValueOf(v.String())
+		return reflect.String
 	case reflect.Float64:
-		return reflect.Float64, reflect.ValueOf(v.Float())
+		return reflect.Float64
 	case reflect.Bool:
-		return reflect.Bool, reflect.ValueOf(v.Bool())
+		return reflect.Bool
 	default:
 		fmt.Printf("ERROR: FindTypeForValue Value:%+v is out of current options.\n", value)
-		return reflect.Invalid, reflect.Value{}
+		return reflect.Invalid
 	}
 }
 

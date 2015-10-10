@@ -59,8 +59,8 @@ func (s StringKeyMapTypeSections) CheckIfValueTypeAlreadyKnown(key string, noOfA
 	return reflect.Invalid, false
 }
 
-// ExploreOneSection tries to find out the section detail for map/slice value.
-func ExploreOneSection(key string, v reflect.Value, noOfArrayLv int) (sec StringKeyMapTypeSection, discovered bool) {
+// ExploreUnknownSection tries to find out the section detail for a unknown map/slice value.
+func ExploreUnknownSection(key string, v reflect.Value, noOfArrayLv int) (sec StringKeyMapTypeSection, discovered bool) {
 	switch v.Kind() {
 	case reflect.Map:
 		sc, isMap := FindValueTypesInUnknownMap(key, v, noOfArrayLv)
