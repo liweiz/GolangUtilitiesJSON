@@ -15,13 +15,7 @@ import (
 
 // FindTypeForValue finds out the type and returns casted value in the form of reflect.Value for non collective data. It handles a data itself or in the form after one reflect.ValueOf() operation.
 func FindTypeForValue(value interface{}) reflect.Kind {
-	var v reflect.Value
-	vv, ok := value.(reflect.Value)
-	if ok {
-		v = vv
-	} else {
-		v = reflect.ValueOf(value)
-	}
+	v := LowestReflectValue(value)
 	switch v.Kind() {
 	case reflect.Slice:
 		if v.Len() > 0 {
@@ -40,9 +34,22 @@ func FindTypeForValue(value interface{}) reflect.Kind {
 	case reflect.Bool:
 		return reflect.Bool
 	default:
-		fmt.Printf("ERROR: FindTypeForValue Value:%+v is out of current options.\n", value)
+		fmt.Printf("ERROR: FindTypeForValue Value:%+v is out of current options. %+v\n", value, reflect.TypeOf(value))
 		return reflect.Invalid
 	}
+}
+
+// LowestReflectValue gets the closest reflect.Value for an interface{} value.
+func LowestReflectValue(value interface{}) reflect.Value {
+	v, ok := value.(reflect.Value)
+	if ok {
+		vv, cool := v.Interface().(reflect.Value)
+		if cool {
+			return LowestReflectValue(vv)
+		}
+		return v
+	}
+	return reflect.ValueOf(value)
 }
 
 // CompareValues compares two values. Currently targeted at value from map.

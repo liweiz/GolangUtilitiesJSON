@@ -6,32 +6,64 @@ import (
 	"testing"
 )
 
-type InOutTestFindTypeForValue struct {
-	InV     interface{}
-	OutKind reflect.Kind
+type InOutFindTypeForValue struct {
+	In  interface{}
+	Out reflect.Kind
 }
 
 func TestFindTypeForValue(t *testing.T) {
-	toTest := []InOutTestFindTypeForValue{
-		// Float64
-		InOutTestFindTypeForValue{float64(1), reflect.Float64},
+	toTest := []InOutFindTypeForValue{
 		// String
-		InOutTestFindTypeForValue{"a", reflect.String},
+		InOutFindTypeForValue{"a", reflect.String},
 		// Bool
-		InOutTestFindTypeForValue{false, reflect.Bool},
+		InOutFindTypeForValue{false, reflect.Bool},
+		// Float64
+		InOutFindTypeForValue{4.1, reflect.Float64},
 		// Map
-		InOutTestFindTypeForValue{map[string]interface{}{"a": 1}, reflect.Map},
+		InOutFindTypeForValue{map[string]interface{}{"a": 2}, reflect.Map},
 		// Slice
-		InOutTestFindTypeForValue{[]interface{}{1}, reflect.Slice},
-		// Nil
-		InOutTestFindTypeForValue{nil, reflect.Invalid},
+		InOutFindTypeForValue{[]string{"b"}, reflect.Slice},
+		// String reflect
+		InOutFindTypeForValue{reflect.ValueOf("a"), reflect.String},
+		// Bool reflect
+		InOutFindTypeForValue{reflect.ValueOf(false), reflect.Bool},
+		// Float64 reflect
+		InOutFindTypeForValue{reflect.ValueOf(4.1), reflect.Float64},
+		// Map reflect
+		InOutFindTypeForValue{reflect.ValueOf(map[string]interface{}{"a": 2}), reflect.Map},
+		// Slice reflect
+		InOutFindTypeForValue{reflect.ValueOf([]string{"b"}), reflect.Slice},
 	}
 	for _, x := range toTest {
-		k := FindTypeForValue(x.InV)
-		if k != x.OutKind {
-			t.Errorf("ERR: value: %+v kind should be %+v. Not %+v\n", x.InV, x.OutKind, k)
-		} else {
+		k := FindTypeForValue(x.In)
+		if k == x.Out {
 			fmt.Println("TestFindTypeForValue passed: ", k)
+		} else {
+			t.Errorf("ERR: interface{}: %+v TestFindTypeForValue should be %+v. Not %+v\n", x.In, x.Out, k)
+		}
+	}
+}
+
+type InOutTestLowestReflectValue struct {
+	In  interface{}
+	Out reflect.Value
+}
+
+func TestLowestReflectValue(t *testing.T) {
+	toTest := []InOutTestLowestReflectValue{
+		// Non reflect.Value
+		InOutTestLowestReflectValue{"a", reflect.ValueOf("a")},
+		// 1 level reflect.Value
+		InOutTestLowestReflectValue{reflect.ValueOf("a"), reflect.ValueOf("a")},
+		// 5 level reflect.Value
+		InOutTestLowestReflectValue{reflect.ValueOf(reflect.ValueOf(reflect.ValueOf(reflect.ValueOf(reflect.ValueOf("a"))))), reflect.ValueOf("a")},
+	}
+	for _, x := range toTest {
+		v := LowestReflectValue(x.In)
+		if v.String() == x.Out.String() {
+			fmt.Println("TestLowestReflectValue passed: ", v)
+		} else {
+			t.Errorf("ERR: interface{}: %+v LowestReflectValue should be %+v. Not %+v\n", x.In, x.Out, v)
 		}
 	}
 }
