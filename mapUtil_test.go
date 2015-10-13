@@ -1,6 +1,9 @@
 package utilities
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 type testCompareStringKeyMapsInOut struct {
 	Ins []map[string]interface{}
@@ -8,6 +11,7 @@ type testCompareStringKeyMapsInOut struct {
 }
 
 func TestCompareStringKeyMaps(t *testing.T) {
+	fmt.Println("\nSTART TestCompareStringKeyMaps")
 	toTest := []testCompareStringKeyMapsInOut{
 		testCompareStringKeyMapsInOut{
 			[]map[string]interface{}{m9, m9},

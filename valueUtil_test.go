@@ -12,6 +12,7 @@ type InOutFindTypeForValue struct {
 }
 
 func TestFindTypeForValue(t *testing.T) {
+	fmt.Println("\nSTART TestFindTypeForValue")
 	toTest := []InOutFindTypeForValue{
 		// String
 		InOutFindTypeForValue{"a", reflect.String},
@@ -50,6 +51,7 @@ type InOutTestLowestReflectValue struct {
 }
 
 func TestLowestReflectValue(t *testing.T) {
+	fmt.Println("\nSTART TestLowestReflectValue")
 	toTest := []InOutTestLowestReflectValue{
 		// Non reflect.Value
 		InOutTestLowestReflectValue{"a", reflect.ValueOf("a")},
@@ -74,6 +76,7 @@ type InOutTestCompareValues struct {
 }
 
 func TestCompareValues(t *testing.T) {
+	fmt.Println("\nSTART TestCompareValues")
 	toTest := []InOutTestCompareValues{
 		InOutTestCompareValues{
 			[]interface{}{nil, m9},

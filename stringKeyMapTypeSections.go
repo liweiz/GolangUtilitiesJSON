@@ -5,7 +5,8 @@ import (
 	"reflect"
 )
 
-// There are two dimensions in a map: 1) depth, a path to a value node 2) width, a section in a branch for a given level.
+// There are two dimensions in a map: 1) depth, a path to a value node 2) width,
+// a section in a branch for a given level.
 
 // StringKeyMapTypeSections stores all the StringKeyMapTypeSections for a map schema.
 type StringKeyMapTypeSections []StringKeyMapTypeSection

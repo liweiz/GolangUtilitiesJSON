@@ -1,6 +1,9 @@
 package utilities
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 var s1 = []string{"a", "b", "c"}
 var s2 = []string{"a"}
@@ -37,6 +40,7 @@ type testStringKeyMapSlicesInBoolOut struct {
 }
 
 func TestCompareStringKeyMapSlices(t *testing.T) {
+	fmt.Println("\nSTART TestCompareStringKeyMapSlices")
 	toTest := []testStringKeyMapSlicesInBoolOut{
 		testStringKeyMapSlicesInBoolOut{
 			[][]map[string]interface{}{[]map[string]interface{}{m1, m10}, []map[string]interface{}{m1, m10}},
@@ -59,6 +63,7 @@ func TestCompareStringKeyMapSlices(t *testing.T) {
 }
 
 func TestCheckIfIsStringKeyMapSlice(t *testing.T) {
+	fmt.Println("\nSTART TestCheckIfIsStringKeyMapSlice")
 	toTest := []testStringKeyMapSliceInBoolOut{
 		testStringKeyMapSliceInBoolOut{
 			[]interface{}{m1, m10},
@@ -95,6 +100,7 @@ func TestCheckIfIsStringKeyMapSlice(t *testing.T) {
 }
 
 func TestCompareStringSlices(t *testing.T) {
+	fmt.Println("\nSTART TestCompareStringSlices")
 	toTest := []testStringSliceInBoolOut{
 		testStringSliceInBoolOut{
 			[][]string{s1, s2},

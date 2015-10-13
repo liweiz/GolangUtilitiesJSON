@@ -3,17 +3,17 @@ package utilities
 import "reflect"
 
 // ConvertToValueSlice converts reflect.Value to map[string]reflect.Value.
-func ConvertToValueSlice(s reflect.Value) (isSlice bool, valueSlice []reflect.Value) {
+func ConvertToValueSlice(s reflect.Value) (valueSlice []reflect.Value, isSlice bool) {
 	r := []reflect.Value{}
 	if s.Kind() == reflect.Slice {
 		if s.Len() > 0 {
 			for i := 0; i < s.Len(); i++ {
 				r = append(r, s.Index(i))
 			}
-			return true, r
+			return r, true
 		}
 	}
-	return false, r
+	return r, false
 }
 
 // ConvertToBoolSlice returns true and []bool, when non-zero []bool is successfully converted.

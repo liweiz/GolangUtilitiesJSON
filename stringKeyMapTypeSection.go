@@ -1,6 +1,9 @@
 package utilities
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+)
 
 // StringKeyMapTypeMap stores StringKeyMap's value type for one layer of one branch.
 type StringKeyMapTypeMap map[string]reflect.Kind
@@ -9,7 +12,7 @@ type StringKeyMapTypeMap map[string]reflect.Kind
 type StringKeyMapTypeSection struct {
 	ParentKey   string
 	NoOfArrayLv int
-	TypeMap     StringKeyMapTypeMap
+	TypeMap     map[string]reflect.Kind
 	TypeSlice   reflect.Kind
 }
 
@@ -58,9 +61,13 @@ func FindValueTypesInUnknownMap(key string, v reflect.Value, noOfArrayLv int) (s
 	if v.Kind() == reflect.Map {
 		if v.Len() > 0 {
 			s := StringKeyMapTypeSection{}
+			s.TypeMap = StringKeyMapTypeMap{}
 			for _, x := range v.MapKeys() {
+				fmt.Println("FindValueTypesInUnknownMap xxxxxx", v.MapIndex(x))
 				k := FindTypeForValue(v.MapIndex(x))
+				fmt.Println("FindValueTypesInUnknownMap yyyyyy: ", k.String())
 				s.TypeMap[x.String()] = k
+				fmt.Println("FindValueTypesInUnknownMap zzzzzz: ", s.TypeMap[x.String()])
 			}
 			s.ParentKey = key
 			s.NoOfArrayLv = noOfArrayLv
@@ -74,7 +81,7 @@ func FindValueTypesInUnknownMap(key string, v reflect.Value, noOfArrayLv int) (s
 func FindValueTypesInSlice(key string, v reflect.Value, noOfArrayLv int) (section StringKeyMapTypeSection, isSlice bool) {
 	if v.Kind() == reflect.Slice {
 		if v.Len() > 0 {
-			_, s := ConvertToValueSlice(v)
+			s, _ := ConvertToValueSlice(v)
 			k := FindTypeForValue(s[0])
 			return StringKeyMapTypeSection{key, noOfArrayLv, StringKeyMapTypeMap{}, k}, true
 		}
